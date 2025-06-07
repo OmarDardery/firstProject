@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 import os
+from dotenv import load_dotenv
 from supabase import create_client, Client
+load_dotenv()
 
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
+url: str = os.environ["SUPABASE_URL"]
+key: str = os.environ["SUPABASE_KEY"]
 supabase: Client = create_client(url, key)
 app = FastAPI()
 
@@ -12,7 +14,14 @@ app = FastAPI()
 async def root():
     return {"message": "Hello World"}
 
+@app.get("/add-person/{name}/{age}")
+def add_person(name: str, age: int):
+    data = supabase.table("main").insert({"name": name, "age": age}).execute()
+    print(data)
+    return {"message": "Person added successfully", "data": data}
 
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+@app.get("/get-people")
+def say_hello():
+    data = supabase.table("main").select("*").execute()
+    print(data)
+    return data
