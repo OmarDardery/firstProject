@@ -14,7 +14,7 @@ app = FastAPI()
 async def root():
     return {"message": "Hello World"}
 
-@app.get("/add-person/{name}/{age}")
+@app.post("/add-person/{name}/{age}")
 def add_person(name: str, age: int):
     data = supabase.table("main").insert({"name": name, "age": age}).execute()
     print(data)
